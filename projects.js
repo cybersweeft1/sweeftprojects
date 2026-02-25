@@ -35,8 +35,12 @@ async function loadConfig() {
   } catch (e) {
     const inline = document.getElementById('app-config')?.textContent;
     if (inline) {
-      const data = JSON.parse(inline);
-      APP_CONFIG.PAYSTACK_PUBLIC_KEY = data.PAYSTACK_PUBLIC_KEY;
+      try {
+        const data = JSON.parse(inline);
+        APP_CONFIG.PAYSTACK_PUBLIC_KEY = data.PAYSTACK_PUBLIC_KEY;
+      } catch (err) {
+        console.error('Config parse error:', err);
+      }
     }
   }
 }
@@ -44,6 +48,7 @@ async function loadConfig() {
 async function loadProjects() {
   try {
     const response = await fetch(`${APP_CONFIG.GITHUB_RAW_BASE}/projects.json?t=${Date.now()}`);
+    if (!response.ok) throw new Error('Failed to fetch projects');
     const data = await response.json();
     
     // Store schools data for filter population
@@ -61,6 +66,11 @@ async function loadProjects() {
   } catch (error) {
     showError('Failed to load projects. Please refresh.');
     console.error('Load error:', error);
+    // Render empty state
+    const grid = document.getElementById('projectsGrid');
+    if (grid) {
+      grid.innerHTML = '<div class="no-results">Unable to load projects. Please check your connection and refresh.</div>';
+    }
   }
 }
 
@@ -339,6 +349,8 @@ function showPurchaseModal(project) {
   const title = document.getElementById('modalProjectTitle');
   const emailInput = document.getElementById('buyerEmail');
   
+  if (!modal || !title || !emailInput) return;
+  
   title.textContent = project.name;
   emailInput.value = '';
   currentPurchase = project;
@@ -367,6 +379,8 @@ function confirmPurchase() {
 
 function processPayment(email, project) {
   const btn = document.getElementById('confirmBuyBtn');
+  if (!btn) return;
+  
   btn.disabled = true;
   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
   
@@ -410,12 +424,18 @@ function showDownloadScreen(project, reference) {
   const title = document.getElementById('downloadProjectTitle');
   const ref = document.getElementById('transactionRef');
   
+  if (!screen || !title || !ref) return;
+  
   title.textContent = project.name;
   ref.textContent = reference;
   
-  document.getElementById('projectsGrid').style.display = 'none';
-  document.getElementById('categoryFilters').style.display = 'none';
-  document.querySelector('.search-section').style.display = 'none';
+  const projectsGrid = document.getElementById('projectsGrid');
+  const categoryFilters = document.getElementById('categoryFilters');
+  const searchSection = document.querySelector('.search-section');
+  
+  if (projectsGrid) projectsGrid.style.display = 'none';
+  if (categoryFilters) categoryFilters.style.display = 'none';
+  if (searchSection) searchSection.style.display = 'none';
   
   screen.classList.add('show');
 }
@@ -456,19 +476,28 @@ function directDownload(projectId) {
 function retryDownload() {
   const lastPurchase = sessionStorage.getItem('last_purchase');
   if (lastPurchase) {
-    const project = JSON.parse(lastPurchase);
-    executeDownload(project);
-    showNotification('Download restarted', 'success');
+    try {
+      const project = JSON.parse(lastPurchase);
+      executeDownload(project);
+      showNotification('Download restarted', 'success');
+    } catch (e) {
+      showNotification('Error restarting download', 'error');
+    }
   } else {
     showNotification('No recent purchase found', 'error');
   }
 }
 
 function returnToStore() {
-  document.getElementById('downloadScreen')?.classList.remove('show');
-  document.getElementById('projectsGrid').style.display = 'grid';
-  document.getElementById('categoryFilters').style.display = 'flex';
-  document.querySelector('.search-section').style.display = 'block';
+  const screen = document.getElementById('downloadScreen');
+  const projectsGrid = document.getElementById('projectsGrid');
+  const categoryFilters = document.getElementById('categoryFilters');
+  const searchSection = document.querySelector('.search-section');
+  
+  if (screen) screen.classList.remove('show');
+  if (projectsGrid) projectsGrid.style.display = 'grid';
+  if (categoryFilters) categoryFilters.style.display = 'flex';
+  if (searchSection) searchSection.style.display = 'block';
   currentPurchase = null;
 }
 
@@ -520,8 +549,13 @@ async function verifyAndDownload(reference, projectId) {
         showDownloadScreen(project, reference);
         setTimeout(() => executeDownload(project), 500);
       }
+    } else {
+      showNotification('Payment verification failed', 'error');
     }
-  } catch (error) { console.error('Verification error:', error); }
+  } catch (error) { 
+    console.error('Verification error:', error);
+    showNotification('Verification error', 'error');
+  }
   window.history.replaceState({}, document.title, window.location.pathname);
 }
 
