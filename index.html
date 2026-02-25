@@ -19,29 +19,25 @@
 
 <div class="container">
   <div class="page-header">
-    <h1>Project Templates Store</h1>
-    <p>Professional templates for NIN, CAC, JAMB, Local Government ID, CVs, and more. ₦2,500 each. Instant download after payment.</p>
+    <h1>Academic Project Store</h1>
+    <p>Premium academic resources across all Schools and Departments. ₦2,500 per download. Secure access and instant delivery.</p>
   </div>
 
-  <!-- Search Section -->
   <div class="search-section">
     <div class="search-box">
       <i class="fas fa-search"></i>
-      <input type="text" id="searchInput" placeholder="Search by name, category, or description...">
+      <input type="text" id="searchInput" placeholder="Search by project name, department, or keyword...">
     </div>
   </div>
 
-  <!-- Category Filters -->
   <div class="category-filters" id="categoryFilters">
-    <!-- Populated by JS -->
+    <div class="loading-small">Loading departments...</div>
   </div>
 
-  <!-- Projects Grid -->
   <div class="projects-grid" id="projectsGrid">
     <div class="loading">Loading projects...</div>
   </div>
 
-  <!-- Download Success Screen (Hidden by default) -->
   <div class="download-screen" id="downloadScreen">
     <div class="download-card">
       <div class="success-icon">
@@ -54,8 +50,7 @@
         <i class="fas fa-exclamation-triangle"></i>
         <div>
           <strong>Important:</strong> Your download has started automatically. 
-          If you leave this page, you will need to pay again to access this file. 
-          Purchases are tied to this device only.
+          If you leave this page, use the same device to "Download Again" without paying twice.
         </div>
       </div>
 
@@ -75,7 +70,6 @@
   </div>
 </div>
 
-<!-- Purchase Modal -->
 <div class="modal" id="purchaseModal">
   <div class="modal-content">
     <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
@@ -95,12 +89,11 @@
     </button>
     
     <p class="modal-note">
-      <i class="fas fa-shield-alt"></i> Secured by Paystack. Instant download after payment.
+      <i class="fas fa-shield-alt"></i> Secured by Paystack. Instant access after payment.
     </p>
   </div>
 </div>
 
-<!-- Notification Toast -->
 <div class="notification" id="notification"></div>
 
 <footer>
@@ -111,10 +104,9 @@
   </div>
 </footer>
 
-<!-- Fallback Config -->
 <script id="app-config" type="application/json">
 {
-  "PAYSTACK_PUBLIC_KEY": "pk_live_your_public_key_here"
+  "PAYSTACK_PUBLIC_KEY": "pk_live_xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 }
 </script>
 
