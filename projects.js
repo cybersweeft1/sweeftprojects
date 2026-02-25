@@ -1,14 +1,13 @@
-
 /**
  * projects.js - Frontend logic for Cyber Sweeft Project Store
- * No API keys here - all secrets stay server-side
+ * Updated to support nested School/Department structure
  */
 
 const APP_CONFIG = {
   PAYSTACK_PUBLIC_KEY: '', // Loaded from server
   FIXED_PRICE: 2500,
   STORAGE_KEY: 'cybersweeft_purchases_v1',
-  PROJECTS_URL: 'projects.json', // Load from same repo
+  PROJECTS_URL: 'projects.json',
   GITHUB_RAW_BASE: 'https://raw.githubusercontent.com/cybersweeft1/cybersweeft/main'
 };
 
@@ -29,12 +28,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function loadConfig() {
   try {
-    // Try to fetch from backend first
     const response = await fetch('/api/config');
     const config = await response.json();
     APP_CONFIG.PAYSTACK_PUBLIC_KEY = config.PAYSTACK_PUBLIC_KEY;
   } catch (e) {
-    // Fallback: parse from inline script or use default
     const inline = document.getElementById('app-config')?.textContent;
     if (inline) {
       const data = JSON.parse(inline);
@@ -45,7 +42,6 @@ async function loadConfig() {
 
 async function loadProjects() {
   try {
-    // Load projects.json from GitHub raw
     const response = await fetch(`${APP_CONFIG.GITHUB_RAW_BASE}/projects.json?t=${Date.now()}`);
     const data = await response.json();
     
@@ -70,19 +66,25 @@ async function loadProjects() {
 function renderCategories(categories) {
   const container = document.getElementById('categoryFilters');
   if (!container) return;
+  container.innerHTML = ''; // Clear existing
   
+  // Add "All" button
   const allBtn = document.createElement('button');
   allBtn.className = 'category-btn active';
-  allBtn.textContent = 'All Projects';
+  allBtn.textContent = 'All Departments';
   allBtn.onclick = () => filterByCategory('all');
   container.appendChild(allBtn);
   
-  categories.forEach(cat => {
-    const btn = document.createElement('button');
-    btn.className = 'category-btn';
-    btn.textContent = cat.replace(/_/g, ' ');
-    btn.onclick = () => filterByCategory(cat);
-    container.appendChild(btn);
+  // Flatten departments from schools and create buttons
+  categories.forEach(school => {
+    // Optional: You could add a heading for the School name here if your CSS supports it
+    school.departments.forEach(dept => {
+      const btn = document.createElement('button');
+      btn.className = 'category-btn';
+      btn.textContent = dept; 
+      btn.onclick = () => filterByCategory(dept);
+      container.appendChild(btn);
+    });
   });
 }
 
@@ -93,7 +95,7 @@ function renderProjects() {
   grid.innerHTML = '';
   
   if (filteredProjects.length === 0) {
-    grid.innerHTML = '<div class="no-results">No projects found. Try a different search.</div>';
+    grid.innerHTML = '<div class="no-results">No projects found for this selection.</div>';
     return;
   }
   
@@ -110,11 +112,12 @@ function createProjectCard(project, isPurchased) {
   const div = document.createElement('div');
   div.className = 'project-card';
   
-  const categoryClass = project.category.toLowerCase().replace(/_/g, '-');
+  // Clean category name for CSS class (removes spaces/special chars)
+  const categoryClass = project.category.toLowerCase().replace(/[^a-z0-9]/g, '-');
   
   div.innerHTML = `
     <div class="project-header">
-      <span class="project-category ${categoryClass}">${project.category.replace(/_/g, ' ')}</span>
+      <span class="project-category ${categoryClass}">${project.category}</span>
       ${isPurchased ? '<span class="purchased-badge"><i class="fas fa-check"></i> Owned</span>' : ''}
     </div>
     <h3 class="project-title">${project.name}</h3>
@@ -123,7 +126,7 @@ function createProjectCard(project, isPurchased) {
       <span class="project-price">₦${APP_CONFIG.FIXED_PRICE.toLocaleString()}</span>
       ${isPurchased 
         ? `<button class="download-btn-sm" onclick="directDownload('${project.id}')">
-             <i class="fas fa-download"></i> Download Again
+             <i class="fas fa-download"></i> Download
            </button>`
         : `<button class="buy-btn" onclick="initiatePurchase('${project.id}')">
              <i class="fas fa-lock"></i> Buy Now
@@ -164,12 +167,9 @@ function handleSearch(query) {
 }
 
 function filterByCategory(category) {
-  // Update active button
+  // Update active button UI
   document.querySelectorAll('.category-btn').forEach(btn => {
-    btn.classList.toggle('active', 
-      (category === 'all' && btn.textContent === 'All Projects') ||
-      btn.textContent === category.replace(/_/g, ' ')
-    );
+    btn.classList.toggle('active', btn.textContent === (category === 'all' ? 'All Departments' : category));
   });
   
   if (category === 'all') {
@@ -178,7 +178,7 @@ function filterByCategory(category) {
     filteredProjects = allProjects.filter(p => p.category === category);
   }
   
-  // Maintain search if exists
+  // Re-apply search filter if user has typed something
   const searchTerm = document.getElementById('searchInput')?.value;
   if (searchTerm) handleSearch(searchTerm);
   else renderProjects();
@@ -191,13 +191,11 @@ function initiatePurchase(projectId) {
   const project = allProjects.find(p => p.id === projectId);
   if (!project) return;
   
-  // Check if already purchased
   if (getPurchasedProjects().includes(projectId)) {
     directDownload(projectId);
     return;
   }
   
-  // Show email modal
   showPurchaseModal(project);
 }
 
@@ -240,7 +238,7 @@ function processPayment(email, project) {
   const handler = PaystackPop.setup({
     key: APP_CONFIG.PAYSTACK_PUBLIC_KEY,
     email: email,
-    amount: APP_CONFIG.FIXED_PRICE * 100, // kobo
+    amount: APP_CONFIG.FIXED_PRICE * 100,
     currency: 'NGN',
     ref: `PRJ_${Date.now()}_${Math.random().toString(36).substr(2, 6).toUpperCase()}`,
     metadata: {
@@ -253,7 +251,7 @@ function processPayment(email, project) {
     callback: (response) => onPaymentSuccess(response, project),
     onClose: () => {
       btn.disabled = false;
-      btn.innerHTML = '<i class="fas fa-lock"></i> Pay ₦2,500';
+      btn.innerHTML = `<i class="fas fa-lock"></i> Pay ₦${APP_CONFIG.FIXED_PRICE.toLocaleString()}`;
     }
   });
   
@@ -262,17 +260,9 @@ function processPayment(email, project) {
 
 function onPaymentSuccess(response, project) {
   closeModal();
-  
-  // Record purchase
   recordPurchase(project.id);
-  
-  // Show success + download screen
   showDownloadScreen(project, response.reference);
-  
-  // Auto-download after 1 second
-  setTimeout(() => {
-    executeDownload(project);
-  }, 1000);
+  setTimeout(() => { executeDownload(project); }, 1000);
 }
 
 // ==========================================
@@ -286,7 +276,6 @@ function showDownloadScreen(project, reference) {
   title.textContent = project.name;
   ref.textContent = reference;
   
-  // Hide grid, show download screen
   document.getElementById('projectsGrid').style.display = 'none';
   document.getElementById('categoryFilters').style.display = 'none';
   document.querySelector('.search-section').style.display = 'none';
@@ -295,16 +284,13 @@ function showDownloadScreen(project, reference) {
 }
 
 function executeDownload(project) {
-  // Google Drive direct download
   const url = project.driveDownloadUrl;
   
-  // Create hidden iframe for download (avoids popup blockers)
   const iframe = document.createElement('iframe');
   iframe.style.display = 'none';
   iframe.src = url;
   document.body.appendChild(iframe);
   
-  // Also try anchor method as backup
   const a = document.createElement('a');
   a.href = url;
   a.download = `${project.name.replace(/\s+/g, '_')}.pdf`;
@@ -312,41 +298,22 @@ function executeDownload(project) {
   document.body.appendChild(a);
   a.click();
   
-  // Cleanup
   setTimeout(() => {
     document.body.removeChild(a);
     document.body.removeChild(iframe);
   }, 5000);
   
-  showNotification('Download started! Check your downloads folder.', 'success');
+  showNotification('Download started!', 'success');
 }
 
 function directDownload(projectId) {
   const project = allProjects.find(p => p.id === projectId);
   if (!project) return;
-  
   if (!getPurchasedProjects().includes(projectId)) {
     initiatePurchase(projectId);
     return;
   }
-  
   executeDownload(project);
-}
-
-function retryDownload() {
-  if (!currentPurchase) {
-    // Try to get from URL params or storage
-    const lastProject = sessionStorage.getItem('last_purchase');
-    if (lastProject) {
-      const project = JSON.parse(lastProject);
-      executeDownload(project);
-      return;
-    }
-    showNotification('Download session expired. Please purchase again.', 'error');
-    returnToStore();
-  } else {
-    executeDownload(currentPurchase);
-  }
 }
 
 function returnToStore() {
@@ -358,15 +325,13 @@ function returnToStore() {
 }
 
 // ==========================================
-// PURCHASE TRACKING (Device-level)
+// PURCHASE TRACKING
 // ==========================================
 function getPurchasedProjects() {
   try {
     const data = localStorage.getItem(APP_CONFIG.STORAGE_KEY);
     return data ? JSON.parse(data) : [];
-  } catch (e) {
-    return [];
-  }
+  } catch (e) { return []; }
 }
 
 function recordPurchase(projectId) {
@@ -375,8 +340,6 @@ function recordPurchase(projectId) {
     purchased.push(projectId);
     localStorage.setItem(APP_CONFIG.STORAGE_KEY, JSON.stringify(purchased));
   }
-  
-  // Also save to session for retry functionality
   const project = allProjects.find(p => p.id === projectId);
   if (project) {
     sessionStorage.setItem('last_purchase', JSON.stringify(project));
@@ -384,31 +347,24 @@ function recordPurchase(projectId) {
 }
 
 // ==========================================
-// CALLBACK HANDLING (URL params)
+// CALLBACK & VERIFICATION
 // ==========================================
 function checkPaymentCallback() {
   const params = new URLSearchParams(window.location.search);
   const reference = params.get('reference');
   const projectId = params.get('project');
-  
-  if (reference && projectId) {
-    // Verify with backend
-    verifyAndDownload(reference, projectId);
-  }
+  if (reference && projectId) verifyAndDownload(reference, projectId);
 }
 
 async function verifyAndDownload(reference, projectId) {
   showNotification('Verifying payment...', 'processing');
-  
   try {
     const response = await fetch(`/api/verify`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ reference })
     });
-    
     const result = await response.json();
-    
     if (result.verified) {
       const project = allProjects.find(p => p.id === projectId);
       if (project) {
@@ -416,15 +372,8 @@ async function verifyAndDownload(reference, projectId) {
         showDownloadScreen(project, reference);
         setTimeout(() => executeDownload(project), 500);
       }
-    } else {
-      showNotification('Payment verification failed. Please contact support.', 'error');
     }
-  } catch (error) {
-    // Silent fail - let user retry manually
-    console.error('Verification error:', error);
-  }
-  
-  // Clean URL
+  } catch (error) { console.error('Verification error:', error); }
   window.history.replaceState({}, document.title, window.location.pathname);
 }
 
@@ -434,16 +383,12 @@ async function verifyAndDownload(reference, projectId) {
 function showNotification(message, type = 'info') {
   const notif = document.getElementById('notification');
   if (!notif) return;
-  
   notif.textContent = message;
   notif.className = `notification show ${type}`;
-  
   setTimeout(() => notif.classList.remove('show'), 5000);
 }
 
-function showError(msg) {
-  showNotification(msg, 'error');
-}
+function showError(msg) { showNotification(msg, 'error'); }
 
 function showModalError(msg) {
   const err = document.getElementById('modalError');
@@ -457,15 +402,8 @@ function showModalError(msg) {
 function toggleTheme() {
   const html = document.documentElement;
   const isDark = html.getAttribute('data-theme') === 'dark';
-  
-  if (isDark) {
-    html.removeAttribute('data-theme');
-    localStorage.setItem('theme', 'light');
-  } else {
-    html.setAttribute('data-theme', 'dark');
-    localStorage.setItem('theme', 'dark');
-  }
-  
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  localStorage.setItem('theme', isDark ? 'light' : 'dark');
   updateThemeIcon(!isDark);
 }
 
@@ -479,14 +417,5 @@ function applySavedTheme() {
 
 function updateThemeIcon(isDark) {
   const btn = document.getElementById('themeBtn');
-  if (btn) {
-    btn.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-  }
-}
-
-// ==========================================
-// EXPORTS
-// ==========================================
-if (typeof module !== 'undefined') {
-  module.exports = { getPurchasedProjects, recordPurchase };
+  if (btn) btn.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
 }
