@@ -1,77 +1,145 @@
 {
-  "categories": ["NIN", "CAC", "JAMB", "LG_ID", "CV", "Business", "Education", "Legal"],
+  "categories": [
+    {
+      "name": "SCHOOL OF APPLIED SCIENCE AND TECHNOLOGY",
+      "departments": [
+        "Department of Science Laboratory Technology",
+        "Department of Home and Rural Economics",
+        "Department of Food Technology",
+        "Department of Statistics",
+        "Department of Hospitality Management",
+        "Department of Computer Science",
+        "Department of Agricultural Technology",
+        "Department of Horticultural Technology"
+      ]
+    },
+    {
+      "name": "SCHOOL OF ARTS, DESIGN AND PRINTING TECHNOLOGY",
+      "departments": [
+        "Department of Fashion Design & Clothing Technology",
+        "Department of Printing Technology",
+        "Department of Fine and Applied Arts"
+      ]
+    },
+    {
+      "name": "SCHOOL OF BUSINESS STUDIES",
+      "departments": [
+        "Department of Business Administration & Management",
+        "Department of Public Administration",
+        "Department of Office Technology and Management",
+        "Department of Marketing"
+      ]
+    },
+    {
+      "name": "SCHOOL OF ENGINEERING TECHNOLOGY",
+      "departments": [
+        "Department of Civil Engineering Technology",
+        "Department of Mechanical Engineering Technology",
+        "Department of Electrical/ Electronics Engineering Technology",
+        "Department of Agricultural and Bio Environmental Engineering Technology",
+        "Department of Computer Engineering Technology",
+        "Department of Chemical Engineering"
+      ]
+    },
+    {
+      "name": "SCHOOL OF ENVIRONMENTAL DESIGN AND TECHNOLOGY",
+      "departments": [
+        "Department of Architecture",
+        "Department of Building Technology",
+        "Department of Estate Management",
+        "Department of Urban and Regional Planning",
+        "Department of Quantity Surveying",
+        "Department of Surveying and Geo-informatics"
+      ]
+    },
+    {
+      "name": "SCHOOL OF FINANCIAL STUDIES",
+      "departments": [
+        "Department of Banking and Finance",
+        "Department of Accountancy",
+        "Department of Insurance"
+      ]
+    },
+    {
+      "name": "SCHOOL OF GENERAL STUDIES",
+      "departments": [
+        "Department of Natural Science",
+        "Department of Social Science",
+        "Department of Languages"
+      ]
+    },
+    {
+      "name": "SCHOOL OF INFORMATION TECHNOLOGY",
+      "departments": [
+        "Department of Mass Communication",
+        "Department of Library and Information Science"
+      ]
+    }
+  ],
   "projects": [
     {
-      "id": "nin-verification-template",
-      "name": "NIN Verification Slip Template",
-      "category": "NIN",
+      "id": "slt-lab-manual",
+      "name": "SLT Laboratory Procedures Manual",
+      "category": "Department of Science Laboratory Technology",
       "price": 2500,
       "driveId": "YOUR_GOOGLE_DRIVE_FILE_ID_HERE",
-      "description": "Professional NIN verification slip template with official formatting"
+      "description": "Comprehensive guide for Science Laboratory Technology practicals"
     },
     {
-      "id": "cac-registration-kit",
-      "name": "CAC Business Registration Kit",
-      "category": "CAC",
+      "id": "cs-final-project",
+      "name": "Computer Science Final Year Project Guide",
+      "category": "Department of Computer Science",
       "price": 2500,
       "driveId": "YOUR_GOOGLE_DRIVE_FILE_ID_HERE",
-      "description": "Complete CAC registration document templates and guides"
+      "description": "Standard project documentation format for CS students"
     },
     {
-      "id": "jamb-admission-letter",
-      "name": "JAMB Admission Letter Template",
-      "category": "JAMB",
+      "id": "fashion-design-portfolio",
+      "name": "Fashion Illustration Portfolio Template",
+      "category": "Department of Fashion Design & Clothing Technology",
       "price": 2500,
       "driveId": "YOUR_GOOGLE_DRIVE_FILE_ID_HERE",
-      "description": "Official JAMB admission letter format template"
+      "description": "Professional template for fashion design portfolios"
     },
     {
-      "id": "lagos-island-lg",
-      "name": "Lagos Island LG ID Form",
-      "category": "LG_ID",
+      "id": "bus-admin-case-study",
+      "name": "Business Admin Case Study Analysis",
+      "category": "Department of Business Administration & Management",
       "price": 2500,
       "driveId": "YOUR_GOOGLE_DRIVE_FILE_ID_HERE",
-      "description": "Lagos Island Local Government Identification form template"
+      "description": "Template for analyzing business management case studies"
     },
     {
-      "id": "ikeja-lg",
-      "name": "Ikeja LG ID Form",
-      "category": "LG_ID",
+      "id": "civil-eng-cad-blocks",
+      "name": "Civil Engineering CAD Block Library",
+      "category": "Department of Civil Engineering Technology",
       "price": 2500,
       "driveId": "YOUR_GOOGLE_DRIVE_FILE_ID_HERE",
-      "description": "Ikeja Local Government Identification form template"
+      "description": "Collection of standard CAD blocks for civil engineering designs"
     },
     {
-      "id": "professional-cv-template",
-      "name": "Professional CV Template Pack",
-      "category": "CV",
+      "id": "arch-design-thesis",
+      "name": "Architecture Design Thesis Format",
+      "category": "Department of Architecture",
       "price": 2500,
       "driveId": "YOUR_GOOGLE_DRIVE_FILE_ID_HERE",
-      "description": "5 modern CV templates for professionals"
+      "description": "Approved formatting structure for Architecture thesis"
     },
     {
-      "id": "business-proposal-template",
-      "name": "Business Proposal Template",
-      "category": "Business",
+      "id": "accounting-spreadsheet",
+      "name": "Financial Accounting Spreadsheet",
+      "category": "Department of Accountancy",
       "price": 2500,
       "driveId": "YOUR_GOOGLE_DRIVE_FILE_ID_HERE",
-      "description": "Complete business proposal format with financial projections"
+      "description": "Automated Excel sheet for basic accounting principles"
     },
     {
-      "id": "project-report-template",
-      "name": "Final Year Project Report Template",
-      "category": "Education",
+      "id": "mass-comm-broadcast",
+      "name": "Broadcast Script Template",
+      "category": "Department of Mass Communication",
       "price": 2500,
       "driveId": "YOUR_GOOGLE_DRIVE_FILE_ID_HERE",
-      "description": "University standard final year project report formatting"
-    },
-    {
-      "id": "affidavit-template",
-      "name": "Legal Affidavit Template",
-      "category": "Legal",
-      "price": 2500,
-      "driveId": "YOUR_GOOGLE_DRIVE_FILE_ID_HERE",
-      "description": "Standard legal affidavit format for official use"
+      "description": "Standard script format for Radio and TV broadcasting"
     }
   ]
 }
