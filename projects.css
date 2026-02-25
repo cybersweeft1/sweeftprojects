@@ -141,7 +141,7 @@ nav {
   gap: 20px;
   justify-content: center;
   flex-wrap: wrap;
-  margin-bottom: 10px;
+  margin-bottom: 30px;
 }
 
 .filter-group {
@@ -274,6 +274,10 @@ nav {
   border-radius: 20px;
   background: rgba(59,130,246,0.1);
   color: var(--accent);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 70%;
 }
 
 /* Department-specific colors (auto-generated from department names) */
@@ -283,6 +287,9 @@ nav {
 .project-category.department-of-architecture { background: rgba(239,68,68,0.1); color: var(--error); }
 .project-category.department-of-accountancy { background: rgba(59,130,246,0.1); color: var(--accent); }
 .project-category.department-of-mass-communication { background: rgba(236,72,153,0.1); color: #ec4899; }
+.project-category.department-of-fashion-design-clothing-technology { background: rgba(245,158,11,0.1); color: var(--warning); }
+.project-category.department-of-business-administration-management { background: rgba(16,185,129,0.1); color: var(--success); }
+.project-category.department-of-banking-and-finance { background: rgba(59,130,246,0.1); color: var(--accent); }
 
 /* School Badge - NEW */
 .school-badge {
@@ -293,11 +300,13 @@ nav {
   align-items: center;
   gap: 6px;
   font-weight: 500;
+  line-height: 1.4;
 }
 
 .school-badge i {
   color: var(--accent);
   font-size: 0.9rem;
+  flex-shrink: 0;
 }
 
 .purchased-badge {
@@ -307,6 +316,7 @@ nav {
   display: flex;
   align-items: center;
   gap: 4px;
+  flex-shrink: 0;
 }
 
 .project-title {
@@ -690,5 +700,11 @@ footer {
     width: 100%;
   }
   
+  .category-filters { overflow-x: auto; flex-wrap: nowrap; justify-content: flex-start; }
   .modal-content { padding: 30px 20px; }
+  
+  .project-category {
+    max-width: 60%;
+    font-size: 0.7rem;
+  }
 }
