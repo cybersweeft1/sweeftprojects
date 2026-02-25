@@ -1,6 +1,6 @@
 /**
  * projects.js - Frontend logic for Cyber Sweeft Project Store
- * Updated to support nested School/Department structure
+ * Updated to support nested School/Department structure with dropdown filters
  */
 
 const APP_CONFIG = {
@@ -8,12 +8,13 @@ const APP_CONFIG = {
   FIXED_PRICE: 2500,
   STORAGE_KEY: 'cybersweeft_purchases_v1',
   PROJECTS_URL: 'projects.json',
-  GITHUB_RAW_BASE: 'https://raw.githubusercontent.com/cybersweeft1/cybersweeft/main'
+  GITHUB_RAW_BASE: 'https://raw.githubusercontent.com/cybersweeft/cybersweeft/main'
 };
 
 let allProjects = [];
 let filteredProjects = [];
 let currentPurchase = null;
+let schoolsData = []; // Store schools data for filtering
 
 // ==========================================
 // INITIALIZATION
@@ -45,6 +46,9 @@ async function loadProjects() {
     const response = await fetch(`${APP_CONFIG.GITHUB_RAW_BASE}/projects.json?t=${Date.now()}`);
     const data = await response.json();
     
+    // Store schools data for filter population
+    schoolsData = data.schools || [];
+    
     allProjects = data.projects.map(p => ({
       ...p,
       driveDownloadUrl: `https://drive.google.com/uc?export=download&id=${p.driveId}`,
@@ -52,7 +56,7 @@ async function loadProjects() {
     }));
     
     filteredProjects = [...allProjects];
-    renderCategories(data.categories);
+    renderFilters(schoolsData);
     renderProjects();
   } catch (error) {
     showError('Failed to load projects. Please refresh.');
@@ -61,33 +65,147 @@ async function loadProjects() {
 }
 
 // ==========================================
-// RENDERING
+// RENDERING FILTERS (Dropdowns)
 // ==========================================
-function renderCategories(categories) {
+function renderFilters(schools) {
   const container = document.getElementById('categoryFilters');
   if (!container) return;
-  container.innerHTML = ''; // Clear existing
+  container.innerHTML = '';
   
-  // Add "All" button
-  const allBtn = document.createElement('button');
-  allBtn.className = 'category-btn active';
-  allBtn.textContent = 'All Departments';
-  allBtn.onclick = () => filterByCategory('all');
-  container.appendChild(allBtn);
+  // Create flex container for dropdowns
+  const filtersWrapper = document.createElement('div');
+  filtersWrapper.className = 'filters-wrapper';
   
-  // Flatten departments from schools and create buttons
-  categories.forEach(school => {
-    // Optional: You could add a heading for the School name here if your CSS supports it
+  // School Select
+  const schoolWrapper = document.createElement('div');
+  schoolWrapper.className = 'filter-group';
+  
+  const schoolLabel = document.createElement('label');
+  schoolLabel.textContent = 'Select School:';
+  schoolLabel.className = 'filter-label';
+  
+  const schoolSelect = document.createElement('select');
+  schoolSelect.id = 'schoolSelect';
+  schoolSelect.className = 'filter-select';
+  
+  // Add "All Schools" option
+  const allSchoolsOpt = document.createElement('option');
+  allSchoolsOpt.value = 'all';
+  allSchoolsOpt.textContent = 'All Schools';
+  schoolSelect.appendChild(allSchoolsOpt);
+  
+  // Add schools
+  schools.forEach(school => {
+    const opt = document.createElement('option');
+    opt.value = school.name;
+    opt.textContent = school.name;
+    schoolSelect.appendChild(opt);
+  });
+  
+  schoolWrapper.appendChild(schoolLabel);
+  schoolWrapper.appendChild(schoolSelect);
+  filtersWrapper.appendChild(schoolWrapper);
+  
+  // Department Select
+  const deptWrapper = document.createElement('div');
+  deptWrapper.className = 'filter-group';
+  
+  const deptLabel = document.createElement('label');
+  deptLabel.textContent = 'Select Department:';
+  deptLabel.className = 'filter-label';
+  
+  const deptSelect = document.createElement('select');
+  deptSelect.id = 'deptSelect';
+  deptSelect.className = 'filter-select';
+  
+  // Add "All Departments" option
+  const allDeptsOpt = document.createElement('option');
+  allDeptsOpt.value = 'all';
+  allDeptsOpt.textContent = 'All Departments';
+  deptSelect.appendChild(allDeptsOpt);
+  
+  // Add all departments initially
+  schools.forEach(school => {
     school.departments.forEach(dept => {
-      const btn = document.createElement('button');
-      btn.className = 'category-btn';
-      btn.textContent = dept; 
-      btn.onclick = () => filterByCategory(dept);
-      container.appendChild(btn);
+      const opt = document.createElement('option');
+      opt.value = dept;
+      opt.textContent = dept;
+      opt.dataset.school = school.name;
+      deptSelect.appendChild(opt);
     });
   });
+  
+  deptWrapper.appendChild(deptLabel);
+  deptWrapper.appendChild(deptSelect);
+  filtersWrapper.appendChild(deptWrapper);
+  
+  container.appendChild(filtersWrapper);
+  
+  // Event listeners
+  schoolSelect.addEventListener('change', (e) => {
+    updateDepartmentOptions(e.target.value, schools);
+    applyFilters();
+  });
+  
+  deptSelect.addEventListener('change', applyFilters);
 }
 
+function updateDepartmentOptions(selectedSchool, schools) {
+  const deptSelect = document.getElementById('deptSelect');
+  if (!deptSelect) return;
+  
+  // Save current selection if valid
+  const currentSelection = deptSelect.value;
+  
+  deptSelect.innerHTML = '';
+  
+  // Add "All Departments" option
+  const allOpt = document.createElement('option');
+  allOpt.value = 'all';
+  allOpt.textContent = selectedSchool === 'all' ? 'All Departments' : 'All Departments in Selected School';
+  deptSelect.appendChild(allOpt);
+  
+  if (selectedSchool === 'all') {
+    // Add all departments from all schools
+    schools.forEach(school => {
+      const group = document.createElement('optgroup');
+      group.label = school.name;
+      
+      school.departments.forEach(dept => {
+        const opt = document.createElement('option');
+        opt.value = dept;
+        opt.textContent = dept;
+        group.appendChild(opt);
+      });
+      
+      deptSelect.appendChild(group);
+    });
+  } else {
+    // Add only departments from selected school
+    const school = schools.find(s => s.name === selectedSchool);
+    if (school) {
+      school.departments.forEach(dept => {
+        const opt = document.createElement('option');
+        opt.value = dept;
+        opt.textContent = dept;
+        deptSelect.appendChild(opt);
+      });
+    }
+  }
+  
+  // Restore selection if still valid
+  if (currentSelection !== 'all') {
+    const options = Array.from(deptSelect.options);
+    const stillExists = options.some(opt => opt.value === currentSelection);
+    if (stillExists) {
+      deptSelect.value = currentSelection;
+    }
+  }
+}
+
+// ==========================================
+// PROJECT RENDERING
+// ==========================================
 function renderProjects() {
   const grid = document.getElementById('projectsGrid');
   if (!grid) return;
@@ -112,13 +230,16 @@ function createProjectCard(project, isPurchased) {
   const div = document.createElement('div');
   div.className = 'project-card';
   
-  // Clean category name for CSS class (removes spaces/special chars)
+  // Create CSS class from department name (category)
   const categoryClass = project.category.toLowerCase().replace(/[^a-z0-9]/g, '-');
   
   div.innerHTML = `
     <div class="project-header">
       <span class="project-category ${categoryClass}">${project.category}</span>
       ${isPurchased ? '<span class="purchased-badge"><i class="fas fa-check"></i> Owned</span>' : ''}
+    </div>
+    <div class="school-badge">
+      <i class="fas fa-university"></i> ${project.school}
     </div>
     <h3 class="project-title">${project.name}</h3>
     <p class="project-desc">${project.description}</p>
@@ -139,53 +260,67 @@ function createProjectCard(project, isPurchased) {
 }
 
 // ==========================================
-// SEARCH & FILTER
+// SEARCH & FILTER LOGIC
 // ==========================================
 function setupEventListeners() {
   const searchInput = document.getElementById('searchInput');
   if (searchInput) {
-    searchInput.addEventListener('input', (e) => handleSearch(e.target.value));
+    searchInput.addEventListener('input', (e) => applyFilters());
   }
   
   document.getElementById('themeBtn')?.addEventListener('click', toggleTheme);
 }
 
-function handleSearch(query) {
-  const term = query.toLowerCase().trim();
+function applyFilters() {
+  const schoolSelect = document.getElementById('schoolSelect');
+  const deptSelect = document.getElementById('deptSelect');
+  const searchInput = document.getElementById('searchInput');
   
-  if (!term) {
-    filteredProjects = [...allProjects];
-  } else {
-    filteredProjects = allProjects.filter(p => 
-      p.name.toLowerCase().includes(term) ||
-      p.category.toLowerCase().includes(term) ||
-      p.description.toLowerCase().includes(term)
-    );
-  }
+  const selectedSchool = schoolSelect ? schoolSelect.value : 'all';
+  const selectedDept = deptSelect ? deptSelect.value : 'all';
+  const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
+  
+  filteredProjects = allProjects.filter(project => {
+    // School filter
+    if (selectedSchool !== 'all' && project.school !== selectedSchool) {
+      return false;
+    }
+    
+    // Department filter (stored in category field for compatibility)
+    if (selectedDept !== 'all' && project.category !== selectedDept) {
+      return false;
+    }
+    
+    // Search filter (searches name, department, school, description)
+    if (searchTerm) {
+      const searchableText = `${project.name} ${project.category} ${project.school} ${project.description}`.toLowerCase();
+      if (!searchableText.includes(searchTerm)) {
+        return false;
+      }
+    }
+    
+    return true;
+  });
   
   renderProjects();
 }
 
+// Legacy function for backward compatibility (if called elsewhere)
 function filterByCategory(category) {
-  // Update active button UI
-  document.querySelectorAll('.category-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.textContent === (category === 'all' ? 'All Departments' : category));
-  });
-  
-  if (category === 'all') {
-    filteredProjects = [...allProjects];
-  } else {
-    filteredProjects = allProjects.filter(p => p.category === category);
+  const deptSelect = document.getElementById('deptSelect');
+  if (deptSelect) {
+    deptSelect.value = category;
+    applyFilters();
   }
-  
-  // Re-apply search filter if user has typed something
-  const searchTerm = document.getElementById('searchInput')?.value;
-  if (searchTerm) handleSearch(searchTerm);
-  else renderProjects();
+}
+
+function handleSearch(query) {
+  // Integrated into applyFilters now, but kept for compatibility
+  applyFilters();
 }
 
 // ==========================================
-// PURCHASE FLOW
+// PURCHASE FLOW (Unchanged - Keep as is)
 // ==========================================
 function initiatePurchase(projectId) {
   const project = allProjects.find(p => p.id === projectId);
@@ -244,7 +379,9 @@ function processPayment(email, project) {
     metadata: {
       custom_fields: [
         { display_name: "Project", variable_name: "project_name", value: project.name },
-        { display_name: "Project ID", variable_name: "project_id", value: project.id }
+        { display_name: "Project ID", variable_name: "project_id", value: project.id },
+        { display_name: "Department", variable_name: "department", value: project.category },
+        { display_name: "School", variable_name: "school", value: project.school }
       ],
       project_id: project.id
     },
@@ -266,7 +403,7 @@ function onPaymentSuccess(response, project) {
 }
 
 // ==========================================
-// DOWNLOAD HANDLING
+// DOWNLOAD HANDLING (Unchanged)
 // ==========================================
 function showDownloadScreen(project, reference) {
   const screen = document.getElementById('downloadScreen');
@@ -316,6 +453,17 @@ function directDownload(projectId) {
   executeDownload(project);
 }
 
+function retryDownload() {
+  const lastPurchase = sessionStorage.getItem('last_purchase');
+  if (lastPurchase) {
+    const project = JSON.parse(lastPurchase);
+    executeDownload(project);
+    showNotification('Download restarted', 'success');
+  } else {
+    showNotification('No recent purchase found', 'error');
+  }
+}
+
 function returnToStore() {
   document.getElementById('downloadScreen')?.classList.remove('show');
   document.getElementById('projectsGrid').style.display = 'grid';
@@ -325,7 +473,7 @@ function returnToStore() {
 }
 
 // ==========================================
-// PURCHASE TRACKING
+// PURCHASE TRACKING (Unchanged)
 // ==========================================
 function getPurchasedProjects() {
   try {
@@ -347,7 +495,7 @@ function recordPurchase(projectId) {
 }
 
 // ==========================================
-// CALLBACK & VERIFICATION
+// CALLBACK & VERIFICATION (Unchanged)
 // ==========================================
 function checkPaymentCallback() {
   const params = new URLSearchParams(window.location.search);
@@ -378,7 +526,7 @@ async function verifyAndDownload(reference, projectId) {
 }
 
 // ==========================================
-// UI HELPERS
+// UI HELPERS (Unchanged)
 // ==========================================
 function showNotification(message, type = 'info') {
   const notif = document.getElementById('notification');
