@@ -1,0 +1,153 @@
+{
+  "schools": [
+    {
+      "name": "SCHOOL OF APPLIED SCIENCE AND TECHNOLOGY",
+      "departments": [
+        "Department of Science Laboratory Technology",
+        "Department of Home and Rural Economics",
+        "Department of Food Technology",
+        "Department of Statistics",
+        "Department of Hospitality Management",
+        "Department of Computer Science",
+        "Department of Agricultural Technology",
+        "Department of Horticultural Technology"
+      ]
+    },
+    {
+      "name": "SCHOOL OF ARTS, DESIGN AND PRINTING TECHNOLOGY",
+      "departments": [
+        "Department of Fashion Design & Clothing Technology",
+        "Department of Printing Technology",
+        "Department of Fine and Applied Arts"
+      ]
+    },
+    {
+      "name": "SCHOOL OF BUSINESS STUDIES",
+      "departments": [
+        "Department of Business Administration & Management",
+        "Department of Public Administration",
+        "Department of Office Technology and Management",
+        "Department of Marketing"
+      ]
+    },
+    {
+      "name": "SCHOOL OF ENGINEERING TECHNOLOGY",
+      "departments": [
+        "Department of Civil Engineering Technology",
+        "Department of Mechanical Engineering Technology",
+        "Department of Electrical/Electronics Engineering Technology",
+        "Department of Agricultural and Bio Environmental Engineering Technology",
+        "Department of Computer Engineering Technology",
+        "Department of Chemical Engineering"
+      ]
+    },
+    {
+      "name": "SCHOOL OF ENVIRONMENTAL DESIGN AND TECHNOLOGY",
+      "departments": [
+        "Department of Architecture",
+        "Department of Building Technology",
+        "Department of Estate Management",
+        "Department of Urban and Regional Planning",
+        "Department of Quantity Surveying",
+        "Department of Surveying and Geo-informatics"
+      ]
+    },
+    {
+      "name": "SCHOOL OF FINANCIAL STUDIES",
+      "departments": [
+        "Department of Banking and Finance",
+        "Department of Accountancy",
+        "Department of Insurance"
+      ]
+    },
+    {
+      "name": "SCHOOL OF GENERAL STUDIES",
+      "departments": [
+        "Department of Natural Science",
+        "Department of Social Science",
+        "Department of Languages"
+      ]
+    },
+    {
+      "name": "SCHOOL OF INFORMATION TECHNOLOGY",
+      "departments": [
+        "Department of Mass Communication",
+        "Department of Library and Information Science"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "id": "slt-final-year-2024",
+      "name": "Science Laboratory Technology Final Year Project Template",
+      "school": "SCHOOL OF APPLIED SCIENCE AND TECHNOLOGY",
+      "category": "Department of Science Laboratory Technology",
+      "price": 2500,
+      "driveId": "YOUR_GOOGLE_DRIVE_FILE_ID_HERE",
+      "description": "Complete final year project template for Science Laboratory Technology students with formatting guidelines"
+    },
+    {
+      "id": "cs-final-year-2024",
+      "name": "Computer Science Project Documentation Template",
+      "school": "SCHOOL OF APPLIED SCIENCE AND TECHNOLOGY",
+      "category": "Department of Computer Science",
+      "price": 2500,
+      "driveId": "YOUR_GOOGLE_DRIVE_FILE_ID_HERE",
+      "description": "Professional project report template for Computer Science final year students"
+    },
+    {
+      "id": "fashion-design-template",
+      "name": "Fashion Design Project Portfolio Template",
+      "school": "SCHOOL OF ARTS, DESIGN AND PRINTING TECHNOLOGY",
+      "category": "Department of Fashion Design & Clothing Technology",
+      "price": 2500,
+      "driveId": "YOUR_GOOGLE_DRIVE_FILE_ID_HERE",
+      "description": "Portfolio template for Fashion Design final year projects with lookbook layouts"
+    },
+    {
+      "id": "business-admin-template",
+      "name": "Business Administration Case Study Template",
+      "school": "SCHOOL OF BUSINESS STUDIES",
+      "category": "Department of Business Administration & Management",
+      "price": 2500,
+      "driveId": "YOUR_GOOGLE_DRIVE_FILE_ID_HERE",
+      "description": "Comprehensive case study and research template for Business Administration students"
+    },
+    {
+      "id": "civil-eng-template",
+      "name": "Civil Engineering Project Report Format",
+      "school": "SCHOOL OF ENGINEERING TECHNOLOGY",
+      "category": "Department of Civil Engineering Technology",
+      "price": 2500,
+      "driveId": "YOUR_GOOGLE_DRIVE_FILE_ID_HERE",
+      "description": "Standard engineering report format with technical drawing specifications"
+    },
+    {
+      "id": "architecture-template",
+      "name": "Architecture Design Thesis Template",
+      "school": "SCHOOL OF ENVIRONMENTAL DESIGN AND TECHNOLOGY",
+      "category": "Department of Architecture",
+      "price": 2500,
+      "driveId": "YOUR_GOOGLE_DRIVE_FILE_ID_HERE",
+      "description": "Thesis documentation template for Architecture students with sheet layouts"
+    },
+    {
+      "id": "accountancy-template",
+      "name": "Accountancy Financial Analysis Template",
+      "school": "SCHOOL OF FINANCIAL STUDIES",
+      "category": "Department of Accountancy",
+      "price": 2500,
+      "driveId": "YOUR_GOOGLE_DRIVE_FILE_ID_HERE",
+      "description": "Financial analysis and audit report template for Accountancy students"
+    },
+    {
+      "id": "mass-comm-template",
+      "name": "Mass Communication Research Project Template",
+      "school": "SCHOOL OF INFORMATION TECHNOLOGY",
+      "category": "Department of Mass Communication",
+      "price": 2500,
+      "driveId": "YOUR_GOOGLE_DRIVE_FILE_ID_HERE",
+      "description": "Media research and journalism project template with citation formats"
+    }
+  ]
+}
