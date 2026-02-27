@@ -11,7 +11,7 @@ const API_CONFIG = {
   
   // GOOGLE SHEETS (Gviz trick - no Apps Script needed for reading)
   // Sheet ID from URL: https://docs.google.com/spreadsheets/d/SHEET_ID/edit
-  SHEET_ID: 'your-google-sheet-id-here',
+  SHEET_ID: '1mtOy-WiKy1Jd85amuJeh_JLWxWlAVvCr',
   SHEET_NAME: 'sweeft projects',
   
   // PRICING
