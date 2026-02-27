@@ -7,9 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <!-- Paystack SDK -->
   <script src="https://js.paystack.co/v2/inline.js"></script>
-  <!-- Config and Data Manager -->
   <script src="api.js"></script>
   <script src="projects.js"></script>
   <style>
@@ -747,32 +745,25 @@
   </style>
 </head>
 <body>
-  <!-- STORE VIEW -->
   <div id="store-view">
-    <!-- Navbar -->
     <nav class="navbar">
       <a href="/" class="logo">CYBER <span>SWEEFT</span></a>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
-        <!-- Moon icon -->
         <svg id="moon-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
         </svg>
-        <!-- Sun icon (hidden by default) -->
         <svg id="sun-icon" class="hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
         </svg>
       </button>
     </nav>
 
-    <!-- Main Content -->
     <main class="main-content">
-      <!-- Header -->
       <div class="header">
         <h1>Final Year Project Store</h1>
         <p>Premium academic resources for all Schools and Departments. ₦2,500 per download. Secure access and instant delivery.</p>
       </div>
 
-      <!-- Search -->
       <div class="search-container">
         <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -786,7 +777,6 @@
         >
       </div>
 
-      <!-- Filters -->
       <div class="filters">
         <div class="filter-group">
           <label class="filter-label">Select Department</label>
@@ -796,28 +786,23 @@
         </div>
       </div>
 
-      <!-- Loading State -->
       <div id="loading-state" class="loading-container">
         <div class="spinner"></div>
         <p style="color: var(--text-muted);">Loading projects...</p>
       </div>
 
-      <!-- Error State -->
       <div id="error-state" class="error-state hidden">
         <p id="error-message">Failed to load projects</p>
       </div>
 
-      <!-- Projects Grid -->
       <div id="projects-container" class="projects-grid hidden"></div>
 
-      <!-- Empty State -->
       <div id="empty-state" class="empty-state hidden">
         <p>No projects found for this selection.</p>
         <p>Try adjusting your filters or search query.</p>
       </div>
     </main>
 
-    <!-- Footer -->
     <footer class="footer">
       <div class="footer-logo">CYBER <span>SWEEFT</span> SERVICES</div>
       <p class="footer-tagline">"Distance Is Not A Barrier"</p>
@@ -830,7 +815,6 @@
     </footer>
   </div>
 
-  <!-- PURCHASE MODAL -->
   <div id="purchase-modal" class="modal-overlay" onclick="closeModal(event)">
     <div class="modal" onclick="event.stopPropagation()">
       <h2 class="modal-title">Complete Purchase</h2>
@@ -857,431 +841,4 @@
       
       <div class="security-note">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-        </svg>
-        <span>Secured by Paystack. Instant access after payment.</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- DOWNLOAD SUCCESS SCREEN -->
-  <div id="download-screen" class="download-screen">
-    <nav class="navbar">
-      <a href="/" class="logo">CYBER <span>SWEEFT</span></a>
-      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
-        <svg id="dl-moon-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
-        </svg>
-        <svg id="dl-sun-icon" class="hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
-        </svg>
-      </button>
-    </nav>
-    
-    <div class="download-content">
-      <div class="success-icon">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
-        </svg>
-      </div>
-      
-      <h2 class="download-title">Payment Successful!</h2>
-      <p class="download-project" id="download-project-name"></p>
-      
-      <div class="warning-box">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-        </svg>
-        <div>
-          <strong>Important:</strong> Your download has started automatically. 
-          If you leave this page, use the same device to "Download Again" without paying twice.
-        </div>
-      </div>
-      
-      <div class="download-actions">
-        <button class="btn btn-success" onclick="retryDownload()">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-          </svg>
-          Download Again
-        </button>
-        <button class="btn btn-outline" onclick="backToStore()">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
-          </svg>
-          Back to Store
-        </button>
-      </div>
-      
-      <p class="reference" id="transaction-ref"></p>
-    </div>
-    
-    <footer class="footer" style="position: fixed; bottom: 0; left: 0; right: 0;">
-      <div class="footer-logo">CYBER <span>SWEEFT</span> SERVICES</div>
-      <p class="footer-tagline">"Distance Is Not A Barrier"</p>
-      <div class="footer-security">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-        </svg>
-        <span>Secure Payments • Instant Delivery</span>
-      </div>
-    </footer>
-  </div>
-
-  <!-- JAVASCRIPT -->
-  <script>
-    // ===== GLOBAL STATE =====
-    const store = new ProjectStore();
-    let currentProjects = [];
-    let selectedProject = null;
-    let purchasedIds = [];
-    let lastTransactionRef = '';
-    let isProcessing = false;
-
-    // ===== INITIALIZATION =====
-    document.addEventListener('DOMContentLoaded', async () => {
-      loadTheme();
-      loadPurchases();
-      populateDepartmentDropdown();
-      
-      try {
-        await store.fetchProjects();
-        renderProjects();
-      } catch (err) {
-        showError('Failed to load projects. Please check your connection and refresh.');
-      }
-    });
-
-    // ===== THEME MANAGEMENT =====
-    function loadTheme() {
-      const saved = localStorage.getItem('theme');
-      if (saved === 'dark') {
-        document.documentElement.classList.add('dark');
-        updateThemeIcons(true);
-      }
-    }
-
-    function toggleTheme() {
-      const isDark = document.documentElement.classList.toggle('dark');
-      localStorage.setItem('theme', isDark ? 'dark' : 'light');
-      updateThemeIcons(isDark);
-    }
-
-    function updateThemeIcons(isDark) {
-      // Main view icons
-      const moonIcon = document.getElementById('moon-icon');
-      const sunIcon = document.getElementById('sun-icon');
-      if (moonIcon && sunIcon) {
-        moonIcon.classList.toggle('hidden', isDark);
-        sunIcon.classList.toggle('hidden', !isDark);
-      }
-      
-      // Download screen icons
-      const dlMoonIcon = document.getElementById('dl-moon-icon');
-      const dlSunIcon = document.getElementById('dl-sun-icon');
-      if (dlMoonIcon && dlSunIcon) {
-        dlMoonIcon.classList.toggle('hidden', isDark);
-        dlSunIcon.classList.toggle('hidden', !isDark);
-      }
-    }
-
-    // ===== PURCHASE MANAGEMENT =====
-    function loadPurchases() {
-      try {
-        const data = localStorage.getItem(window.API_CONFIG.STORAGE_KEY);
-        if (data) {
-          purchasedIds = JSON.parse(data);
-        }
-      } catch (e) {
-        console.error('Error loading purchases:', e);
-        purchasedIds = [];
-      }
-    }
-
-    function savePurchase(projectId) {
-      if (!purchasedIds.includes(projectId)) {
-        purchasedIds.push(projectId);
-        localStorage.setItem(window.API_CONFIG.STORAGE_KEY, JSON.stringify(purchasedIds));
-      }
-    }
-
-    function isPurchased(projectId) {
-      return purchasedIds.includes(projectId);
-    }
-
-    // ===== DEPARTMENT DROPDOWN =====
-    function populateDepartmentDropdown() {
-      const select = document.getElementById('dept-filter');
-      window.ALL_DEPARTMENTS.forEach(dept => {
-        const option = document.createElement('option');
-        option.value = dept;
-        option.textContent = dept;
-        select.appendChild(option);
-      });
-    }
-
-    // ===== RENDERING =====
-    function renderProjects() {
-      const container = document.getElementById('projects-container');
-      const loading = document.getElementById('loading-state');
-      const empty = document.getElementById('empty-state');
-      const error = document.getElementById('error-state');
-      
-      const deptFilter = document.getElementById('dept-filter').value;
-      const searchQuery = document.getElementById('search-input').value;
-      
-      loading.classList.add('hidden');
-      error.classList.add('hidden');
-      
-      currentProjects = store.filterProjects(deptFilter, searchQuery);
-      
-      if (currentProjects.length === 0) {
-        container.classList.add('hidden');
-        empty.classList.remove('hidden');
-        return;
-      }
-      
-      empty.classList.add('hidden');
-      container.classList.remove('hidden');
-      
-      container.innerHTML = currentProjects.map(project => `
-        <div class="project-card">
-          <div class="card-header">
-            <span class="dept-badge" title="${escapeHtml(project.category)}">${escapeHtml(project.category)}</span>
-            ${isPurchased(project.id) ? `
-              <span class="owned-badge">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
-                </svg>
-                Owned
-              </span>
-            ` : ''}
-          </div>
-          
-          <div class="school-info">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-            </svg>
-            <span>${escapeHtml(project.school)}</span>
-          </div>
-          
-          <h3 class="project-title">${escapeHtml(project.name)}</h3>
-          <p class="project-desc">${escapeHtml(project.description)}</p>
-          
-          <div class="card-footer">
-            <span class="price">₦${project.price.toLocaleString()}</span>
-            ${isPurchased(project.id) ? `
-              <button class="btn btn-success" onclick="downloadProject('${project.id}')">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                </svg>
-                Download
-              </button>
-            ` : `
-              <button class="btn btn-primary" onclick="openPurchaseModal('${project.id}')">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                </svg>
-                Buy Now
-              </button>
-            `}
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function handleFilter() {
-      renderProjects();
-    }
-
-    function handleSearch() {
-      renderProjects();
-    }
-
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
-    }
-
-    // ===== PURCHASE FLOW =====
-    function openPurchaseModal(projectId) {
-      selectedProject = store.getProjectById(projectId);
-      if (!selectedProject) return;
-      
-      document.getElementById('modal-project-name').textContent = selectedProject.name;
-      document.getElementById('email-input').value = '';
-      document.getElementById('purchase-modal').classList.add('active');
-      document.getElementById('email-input').focus();
-    }
-
-    function closeModal(event) {
-      if (event.target.id === 'purchase-modal') {
-        document.getElementById('purchase-modal').classList.remove('active');
-        selectedProject = null;
-        isProcessing = false;
-        updatePayButton();
-      }
-    }
-
-    function updatePayButton() {
-      const btn = document.getElementById('pay-btn');
-      const text = document.getElementById('pay-btn-text');
-      
-      if (isProcessing) {
-        btn.disabled = true;
-        text.innerHTML = '<span class="spinner" style="width:18px;height:18px;border-width:2px;display:inline-block;margin:0;vertical-align:middle;"></span> Processing...';
-      } else {
-        btn.disabled = false;
-        text.textContent = 'Pay ₦2,500 & Download';
-      }
-    }
-
-    function processPayment() {
-      if (isProcessing || !selectedProject) return;
-      
-      const email = document.getElementById('email-input').value.trim();
-      
-      if (!email || !isValidEmail(email)) {
-        alert('Please enter a valid email address');
-        return;
-      }
-      
-      if (!window.PaystackPop) {
-        alert('Payment system not loaded. Please refresh the page.');
-        return;
-      }
-      
-      isProcessing = true;
-      updatePayButton();
-      
-      const handler = window.PaystackPop.setup({
-        key: window.API_CONFIG.PAYSTACK_PUBLIC_KEY,
-        email: email,
-        amount: window.API_CONFIG.FIXED_PRICE * 100,
-        currency: 'NGN',
-        ref: `PRJ_${Date.now()}_${Math.random().toString(36).substr(2, 6).toUpperCase()}`,
-        metadata: {
-          custom_fields: [
-            { display_name: 'Project Name', variable_name: 'project_name', value: selectedProject.name },
-            { display_name: 'Project ID', variable_name: 'project_id', value: selectedProject.id },
-            { display_name: 'Department', variable_name: 'department', value: selectedProject.category },
-            { display_name: 'School', variable_name: 'school', value: selectedProject.school }
-          ],
-          project_id: selectedProject.id
-        },
-        callback: function(response) {
-          isProcessing = false;
-          document.getElementById('purchase-modal').classList.remove('active');
-          
-          // Save purchase
-          savePurchase(selectedProject.id);
-          sessionStorage.setItem('last_purchase', JSON.stringify(selectedProject));
-          
-          lastTransactionRef = response.reference;
-          
-          // Show download screen
-          showDownloadScreen();
-          
-          // Auto-download after 1 second
-          setTimeout(() => {
-            performDownload(selectedProject);
-          }, 1000);
-        },
-        onClose: function() {
-          isProcessing = false;
-          updatePayButton();
-        }
-      });
-      
-      handler.openIframe();
-    }
-
-    function isValidEmail(email) {
-      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    }
-
-    // ===== DOWNLOAD SCREEN =====
-    function showDownloadScreen() {
-      document.getElementById('store-view').classList.add('hidden');
-      document.getElementById('download-screen').classList.add('active');
-      document.getElementById('download-project-name').textContent = selectedProject.name;
-      document.getElementById('transaction-ref').textContent = 'Reference: ' + lastTransactionRef;
-      
-      // Update theme icons on download screen
-      const isDark = document.documentElement.classList.contains('dark');
-      const dlMoonIcon = document.getElementById('dl-moon-icon');
-      const dlSunIcon = document.getElementById('dl-sun-icon');
-      if (dlMoonIcon && dlSunIcon) {
-        dlMoonIcon.classList.toggle('hidden', isDark);
-        dlSunIcon.classList.toggle('hidden', !isDark);
-      }
-    }
-
-    function performDownload(project) {
-      if (!project || !project.driveDownloadUrl) {
-        console.error('No download URL available');
-        return;
-      }
-      
-      // Method 1: Hidden iframe for direct download
-      const iframe = document.createElement('iframe');
-      iframe.style.display = 'none';
-      iframe.src = project.driveDownloadUrl;
-      document.body.appendChild(iframe);
-      
-      // Method 2: Anchor tag fallback
-      const a = document.createElement('a');
-      a.href = project.driveDownloadUrl;
-      a.download = `${project.name.replace(/\s+/g, '_')}.pdf`;
-      a.target = '_blank';
-      document.body.appendChild(a);
-      a.click();
-      
-      // Cleanup after delay
-      setTimeout(() => {
-        if (document.body.contains(a)) document.body.removeChild(a);
-        if (document.body.contains(iframe)) document.body.removeChild(iframe);
-      }, 5000);
-    }
-
-    function downloadProject(projectId) {
-      const project = store.getProjectById(projectId);
-      if (project) {
-        performDownload(project);
-      }
-    }
-
-    function retryDownload() {
-      const lastPurchase = sessionStorage.getItem('last_purchase');
-      if (lastPurchase) {
-        try {
-          const project = JSON.parse(lastPurchase);
-          performDownload(project);
-        } catch (e) {
-          console.error('Error retrying download:', e);
-        }
-      }
-    }
-
-    function backToStore() {
-      document.getElementById('download-screen').classList.remove('active');
-      document.getElementById('store-view').classList.remove('hidden');
-      selectedProject = null;
-      renderProjects(); // Refresh to show "Owned" badge
-      window.scrollTo(0, 0);
-    }
-
-    // ===== ERROR HANDLING =====
-    function showError(message) {
-      const loading = document.getElementById('loading-state');
-      const error = document.getElementById('error-state');
-      const errorMessage = document.getElementById('error-message');
-      
-      loading.classList.add('hidden');
-      errorMessage.textContent = message;
-      error.classList.remove('hidden');
-    }
-  </script>
-</body>
-</html>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.6
