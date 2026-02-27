@@ -1,11 +1,8 @@
 /**
  * Cyber Sweeft - Projects Data Manager
- * Uses Google Sheets Gviz API for unlimited reads (no Apps Script quota)
  */
 
-// Department to School mapping - All 34 departments from your original code
 const DEPARTMENT_TO_SCHOOL = {
-  // SCHOOL OF APPLIED SCIENCE AND TECHNOLOGY (8 departments)
   "Department of Science Laboratory Technology": "SCHOOL OF APPLIED SCIENCE AND TECHNOLOGY",
   "Department of Home and Rural Economics": "SCHOOL OF APPLIED SCIENCE AND TECHNOLOGY",
   "Department of Food Technology": "SCHOOL OF APPLIED SCIENCE AND TECHNOLOGY",
@@ -14,236 +11,109 @@ const DEPARTMENT_TO_SCHOOL = {
   "Department of Computer Science": "SCHOOL OF APPLIED SCIENCE AND TECHNOLOGY",
   "Department of Agricultural Technology": "SCHOOL OF APPLIED SCIENCE AND TECHNOLOGY",
   "Department of Horticultural Technology": "SCHOOL OF APPLIED SCIENCE AND TECHNOLOGY",
-  
-  // SCHOOL OF ARTS, DESIGN AND PRINTING TECHNOLOGY (3 departments)
   "Department of Fashion Design & Clothing Technology": "SCHOOL OF ARTS, DESIGN AND PRINTING TECHNOLOGY",
   "Department of Printing Technology": "SCHOOL OF ARTS, DESIGN AND PRINTING TECHNOLOGY",
   "Department of Fine and Applied Arts": "SCHOOL OF ARTS, DESIGN AND PRINTING TECHNOLOGY",
-  
-  // SCHOOL OF BUSINESS STUDIES (4 departments)
   "Department of Business Administration & Management": "SCHOOL OF BUSINESS STUDIES",
   "Department of Public Administration": "SCHOOL OF BUSINESS STUDIES",
   "Department of Office Technology and Management": "SCHOOL OF BUSINESS STUDIES",
   "Department of Marketing": "SCHOOL OF BUSINESS STUDIES",
-  
-  // SCHOOL OF ENGINEERING TECHNOLOGY (6 departments)
   "Department of Civil Engineering Technology": "SCHOOL OF ENGINEERING TECHNOLOGY",
   "Department of Mechanical Engineering Technology": "SCHOOL OF ENGINEERING TECHNOLOGY",
   "Department of Electrical/Electronics Engineering Technology": "SCHOOL OF ENGINEERING TECHNOLOGY",
   "Department of Agricultural and Bio Environmental Engineering Technology": "SCHOOL OF ENGINEERING TECHNOLOGY",
   "Department of Computer Engineering Technology": "SCHOOL OF ENGINEERING TECHNOLOGY",
   "Department of Chemical Engineering": "SCHOOL OF ENGINEERING TECHNOLOGY",
-  
-  // SCHOOL OF ENVIRONMENTAL DESIGN AND TECHNOLOGY (6 departments)
   "Department of Architecture": "SCHOOL OF ENVIRONMENTAL DESIGN AND TECHNOLOGY",
   "Department of Building Technology": "SCHOOL OF ENVIRONMENTAL DESIGN AND TECHNOLOGY",
   "Department of Estate Management": "SCHOOL OF ENVIRONMENTAL DESIGN AND TECHNOLOGY",
   "Department of Urban and Regional Planning": "SCHOOL OF ENVIRONMENTAL DESIGN AND TECHNOLOGY",
   "Department of Quantity Surveying": "SCHOOL OF ENVIRONMENTAL DESIGN AND TECHNOLOGY",
   "Department of Surveying and Geo-informatics": "SCHOOL OF ENVIRONMENTAL DESIGN AND TECHNOLOGY",
-  
-  // SCHOOL OF FINANCIAL STUDIES (3 departments)
   "Department of Banking and Finance": "SCHOOL OF FINANCIAL STUDIES",
   "Department of Accountancy": "SCHOOL OF FINANCIAL STUDIES",
   "Department of Insurance": "SCHOOL OF FINANCIAL STUDIES",
-  
-  // SCHOOL OF GENERAL STUDIES (3 departments)
   "Department of Natural Science": "SCHOOL OF GENERAL STUDIES",
   "Department of Social Science": "SCHOOL OF GENERAL STUDIES",
   "Department of Languages": "SCHOOL OF GENERAL STUDIES",
-  
-  // SCHOOL OF INFORMATION TECHNOLOGY (2 departments)
   "Department of Mass Communication": "SCHOOL OF INFORMATION TECHNOLOGY",
   "Department of Library and Information Science": "SCHOOL OF INFORMATION TECHNOLOGY"
 };
 
-// All departments sorted alphabetically for dropdown
 const ALL_DEPARTMENTS = Object.keys(DEPARTMENT_TO_SCHOOL).sort();
 
-// Schools list for reference
-const ALL_SCHOOLS = [
-  "SCHOOL OF APPLIED SCIENCE AND TECHNOLOGY",
-  "SCHOOL OF ARTS, DESIGN AND PRINTING TECHNOLOGY",
-  "SCHOOL OF BUSINESS STUDIES",
-  "SCHOOL OF ENGINEERING TECHNOLOGY",
-  "SCHOOL OF ENVIRONMENTAL DESIGN AND TECHNOLOGY",
-  "SCHOOL OF FINANCIAL STUDIES",
-  "SCHOOL OF GENERAL STUDIES",
-  "SCHOOL OF INFORMATION TECHNOLOGY"
-];
-
-/**
- * Project Store Class
- * Handles fetching and filtering projects from Google Sheets
- */
 class ProjectStore {
   constructor() {
     this.projects = [];
-    this.loading = false;
-    this.error = null;
   }
 
-  /**
-   * Fetch projects using Google Sheets Gviz API
-   * This bypasses Apps Script quota limits completely
-   */
   async fetchProjects() {
-    this.loading = true;
-    this.error = null;
-    
     try {
       const { SHEET_ID, SHEET_NAME } = window.API_CONFIG;
-      
-      // Gviz API endpoint - returns JSONP that we parse
       const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`;
       
       const response = await fetch(url);
       const text = await response.text();
       
-      // Extract JSON from JSONP wrapper
-      // Response format: /*O_o*/google.visualization.Query.setResponse({...});
-      const jsonMatch = text.match(/\/\*O_o\*\/\s*google\.visualization\.Query\.setResponse\((.*)\);?\s*$/s);
+      // Improved Regex to grab the JSON content inside the Google wrapper
+      const jsonStart = text.indexOf('{');
+      const jsonEnd = text.lastIndexOf('}');
+      const jsonData = JSON.parse(text.substring(jsonStart, jsonEnd + 1));
       
-      if (!jsonMatch) {
-        throw new Error('Invalid response format from Google Sheets');
-      }
-      
-      const data = JSON.parse(jsonMatch[1]);
-      this.projects = this.parseSheetData(data);
-      this.loading = false;
-      
+      this.projects = this.parseSheetData(jsonData);
       return this.projects;
     } catch (err) {
-      this.error = err.message;
-      this.loading = false;
-      console.error('Failed to fetch projects:', err);
+      console.error('Fetch Error:', err);
       throw err;
     }
   }
 
-  /**
-   * Parse Google Sheets response into project objects
-   * FIXED: Updated column mapping to match your sheet structure:
-   * A=id, B=projectName, C=department, D=description, E=price, F=field (driveId), G=createdAt, H=status
-   */
   parseSheetData(data) {
-    if (!data.table || !data.table.rows || data.table.rows.length < 2) {
-      console.log('No data found in sheet or only header row present');
-      return [];
-    }
+    if (!data.table || !data.table.rows) return [];
     
-    const rows = data.table.rows;
-    const projects = [];
-    
-    // Skip header row (index 0), start from data rows
-    for (let i = 1; i < rows.length; i++) {
-      const row = rows[i].c;
-      if (!row) continue;
+    // Mapping: A=0(ID), B=1(Name), C=2(Dept), D=3(Desc), E=4(Price), F=5(DriveID), H=7(Status)
+    return data.table.rows.map(row => {
+      const cells = row.c;
+      if (!cells || !cells[0]) return null;
+
+      const status = cells[7]?.v?.toString().toLowerCase() || 'active';
+      if (status !== 'active') return null;
+
+      const dept = cells[2]?.v?.toString().trim() || 'General';
       
-      // Extract cell values (handle null/undefined)
-      // Column A: id
-      const id = row[0]?.v?.toString().trim() || '';
-      // Column B: projectName (mapped to name)
-      const name = row[1]?.v?.toString().trim() || '';
-      // Column C: department
-      const department = row[2]?.v?.toString().trim() || '';
-      // Column D: description
-      const description = row[3]?.v?.toString().trim() || '';
-      // Column E: price
-      const price = parseInt(row[4]?.v) || window.API_CONFIG.FIXED_PRICE;
-      // Column F: field (this is your Google Drive ID)
-      const driveId = row[5]?.v?.toString().trim() || '';
-      // Column H: status
-      const status = row[7]?.v?.toString().trim().toLowerCase() || 'active';
-      
-      console.log(`Row ${i}:`, { id, name, department, driveId, status });
-      
-      // Skip inactive or incomplete rows
-      if (status !== 'active') {
-        console.log(`Skipping row ${i}: status is not active`);
-        continue;
-      }
-      
-      if (!id) {
-        console.log(`Skipping row ${i}: no ID`);
-        continue;
-      }
-      
-      if (!driveId) {
-        console.log(`Skipping row ${i}: no Drive ID`);
-        continue;
-      }
-      
-      if (!name) {
-        console.log(`Skipping row ${i}: no project name`);
-        continue;
-      }
-      
-      // Get school from department mapping
-      const school = DEPARTMENT_TO_SCHOOL[department] || 'Unknown School';
-      
-      projects.push({
-        id,
-        name,
-        school,
-        category: department,
-        price,
-        driveId,
-        description: description || 'No description available',
-        // Google Drive direct download URL
-        driveDownloadUrl: `https://drive.google.com/uc?export=download&id=${driveId}`,
-        // View URL for preview
-        viewUrl: `https://drive.google.com/file/d/${driveId}/view`
-      });
-    }
-    
-    console.log(`Parsed ${projects.length} projects from sheet`);
-    return projects;
+      return {
+        id: cells[0]?.v?.toString() || Math.random().toString(36),
+        name: cells[1]?.v?.toString() || 'Untitled Project',
+        category: dept,
+        school: DEPARTMENT_TO_SCHOOL[dept] || "Other",
+        description: cells[3]?.v?.toString() || 'No description available.',
+        price: parseInt(cells[4]?.v) || window.API_CONFIG.FIXED_PRICE,
+        driveId: cells[5]?.v?.toString().trim() || '',
+        driveDownloadUrl: `https://drive.google.com/uc?export=download&id=${cells[5]?.v}`,
+      };
+    }).filter(p => p !== null && p.driveId !== '');
   }
 
-  /**
-   * Filter projects by department and search query
-   */
   filterProjects(department = 'all', searchQuery = '') {
     let filtered = [...this.projects];
-    
-    // Filter by department dropdown
     if (department !== 'all') {
       filtered = filtered.filter(p => p.category === department);
     }
-    
-    // Filter by search query (case-insensitive)
     if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase().trim();
+      const q = searchQuery.toLowerCase();
       filtered = filtered.filter(p => 
-        p.name.toLowerCase().includes(query) ||
-        p.category.toLowerCase().includes(query) ||
-        p.school.toLowerCase().includes(query) ||
-        p.description.toLowerCase().includes(query)
+        p.name.toLowerCase().includes(q) || 
+        p.description.toLowerCase().includes(q) ||
+        p.category.toLowerCase().includes(q)
       );
     }
-    
     return filtered;
   }
 
-  /**
-   * Get a single project by ID
-   */
   getProjectById(id) {
-    return this.projects.find(p => p.id === id);
-  }
-
-  /**
-   * Get all unique departments present in projects
-   */
-  getAvailableDepartments() {
-    const depts = new Set(this.projects.map(p => p.category));
-    return Array.from(depts).sort();
+    return this.projects.find(p => p.id == id);
   }
 }
 
-// Make available globally
 window.ProjectStore = ProjectStore;
 window.ALL_DEPARTMENTS = ALL_DEPARTMENTS;
-window.ALL_SCHOOLS = ALL_SCHOOLS;
-window.DEPARTMENT_TO_SCHOOL = DEPARTMENT_TO_SCHOOL;
