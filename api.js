@@ -8,8 +8,7 @@ const API_CONFIG = {
   PAYSTACK_SECRET_KEY: 'sk_live_your_secret_key_here',
   
   // GOOGLE SHEETS
-  // 1. MUST set Sheet to "Anyone with the link can view"
-  // 2. SHEET_ID is the long string in your URL
+  // IMPORTANT: Sheet MUST be set to "Anyone with the link can view"
   SHEET_ID: '1mtOy-WiKy1Jd85amuJeh_JLWxWlAVvCr', 
   SHEET_NAME: 'sweeft projects',
   
