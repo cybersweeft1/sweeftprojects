@@ -123,10 +123,12 @@ class ProjectStore {
 
   /**
    * Parse Google Sheets response into project objects
-   * Expected columns: A=ID, B=Name, C=Department, D=Description, E=Price, F=DriveID, G=CreatedAt, H=Status
+   * FIXED: Updated column mapping to match your sheet structure:
+   * A=id, B=projectName, C=department, D=description, E=price, F=field (driveId), G=createdAt, H=status
    */
   parseSheetData(data) {
     if (!data.table || !data.table.rows || data.table.rows.length < 2) {
+      console.log('No data found in sheet or only header row present');
       return [];
     }
     
@@ -139,16 +141,41 @@ class ProjectStore {
       if (!row) continue;
       
       // Extract cell values (handle null/undefined)
+      // Column A: id
       const id = row[0]?.v?.toString().trim() || '';
+      // Column B: projectName (mapped to name)
       const name = row[1]?.v?.toString().trim() || '';
+      // Column C: department
       const department = row[2]?.v?.toString().trim() || '';
+      // Column D: description
       const description = row[3]?.v?.toString().trim() || '';
+      // Column E: price
       const price = parseInt(row[4]?.v) || window.API_CONFIG.FIXED_PRICE;
+      // Column F: field (this is your Google Drive ID)
       const driveId = row[5]?.v?.toString().trim() || '';
+      // Column H: status
       const status = row[7]?.v?.toString().trim().toLowerCase() || 'active';
       
+      console.log(`Row ${i}:`, { id, name, department, driveId, status });
+      
       // Skip inactive or incomplete rows
-      if (status !== 'active' || !id || !driveId || !name) {
+      if (status !== 'active') {
+        console.log(`Skipping row ${i}: status is not active`);
+        continue;
+      }
+      
+      if (!id) {
+        console.log(`Skipping row ${i}: no ID`);
+        continue;
+      }
+      
+      if (!driveId) {
+        console.log(`Skipping row ${i}: no Drive ID`);
+        continue;
+      }
+      
+      if (!name) {
+        console.log(`Skipping row ${i}: no project name`);
         continue;
       }
       
@@ -170,6 +197,7 @@ class ProjectStore {
       });
     }
     
+    console.log(`Parsed ${projects.length} projects from sheet`);
     return projects;
   }
 
