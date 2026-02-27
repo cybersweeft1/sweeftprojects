@@ -1,5 +1,6 @@
 /**
  * Cyber Sweeft - Projects Data Manager
+ * Uses GVIK/Gviz trick for unlimited reads
  */
 
 const DEPARTMENT_TO_SCHOOL = {
@@ -50,20 +51,21 @@ class ProjectStore {
   async fetchProjects() {
     try {
       const { SHEET_ID, SHEET_NAME } = window.API_CONFIG;
+      // The GVIK trick URL
       const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`;
       
       const response = await fetch(url);
       const text = await response.text();
       
-      // Improved Regex to grab the JSON content inside the Google wrapper
-      const jsonStart = text.indexOf('{');
-      const jsonEnd = text.lastIndexOf('}');
-      const jsonData = JSON.parse(text.substring(jsonStart, jsonEnd + 1));
+      // Fix: Better parsing to handle Google's JSON wrapper safely
+      const jsonStr = text.match(/google\.visualization\.Query\.setResponse\(([\s\S\w]+)\)/);
+      if (!jsonStr || !jsonStr[1]) throw new Error("Invalid response format from Sheets");
       
+      const jsonData = JSON.parse(jsonStr[1]);
       this.projects = this.parseSheetData(jsonData);
       return this.projects;
     } catch (err) {
-      console.error('Fetch Error:', err);
+      console.error('Project Loading Error:', err);
       throw err;
     }
   }
@@ -71,25 +73,27 @@ class ProjectStore {
   parseSheetData(data) {
     if (!data.table || !data.table.rows) return [];
     
-    // Mapping: A=0(ID), B=1(Name), C=2(Dept), D=3(Desc), E=4(Price), F=5(DriveID), H=7(Status)
+    // Mapping based on your screenshot: 
+    // A=0(ID), B=1(Name), C=2(Dept), D=3(Desc), E=4(Price), F=5(DriveID), H=7(Status)
     return data.table.rows.map(row => {
-      const cells = row.c;
-      if (!cells || !cells[0]) return null;
+      const c = row.c;
+      if (!c || !c[0]) return null; // Skip empty rows
 
-      const status = cells[7]?.v?.toString().toLowerCase() || 'active';
+      // Only show if Status (Col H / Index 7) is 'active'
+      const status = c[7]?.v?.toString().toLowerCase() || '';
       if (status !== 'active') return null;
 
-      const dept = cells[2]?.v?.toString().trim() || 'General';
+      const dept = c[2]?.v?.toString().trim() || 'General';
       
       return {
-        id: cells[0]?.v?.toString() || Math.random().toString(36),
-        name: cells[1]?.v?.toString() || 'Untitled Project',
+        id: c[0]?.v?.toString() || '',
+        name: c[1]?.v?.toString() || 'Untitled Project',
         category: dept,
-        school: DEPARTMENT_TO_SCHOOL[dept] || "Other",
-        description: cells[3]?.v?.toString() || 'No description available.',
-        price: parseInt(cells[4]?.v) || window.API_CONFIG.FIXED_PRICE,
-        driveId: cells[5]?.v?.toString().trim() || '',
-        driveDownloadUrl: `https://drive.google.com/uc?export=download&id=${cells[5]?.v}`,
+        school: DEPARTMENT_TO_SCHOOL[dept] || "GENERAL STUDIES",
+        description: c[3]?.v?.toString() || 'Detailed project documentation.',
+        price: parseInt(c[4]?.v) || window.API_CONFIG.FIXED_PRICE,
+        driveId: c[5]?.v?.toString().trim() || '',
+        driveDownloadUrl: `https://drive.google.com/uc?export=download&id=${c[5]?.v}`,
       };
     }).filter(p => p !== null && p.driveId !== '');
   }
@@ -103,8 +107,7 @@ class ProjectStore {
       const q = searchQuery.toLowerCase();
       filtered = filtered.filter(p => 
         p.name.toLowerCase().includes(q) || 
-        p.description.toLowerCase().includes(q) ||
-        p.category.toLowerCase().includes(q)
+        p.description.toLowerCase().includes(q)
       );
     }
     return filtered;
