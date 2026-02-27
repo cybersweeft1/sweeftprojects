@@ -11,7 +11,21 @@
   <script src="https://js.paystack.co/v2/inline.js"></script>
   <!-- Config and Data Manager -->
   <script src="api.js"></script>
-  <script src="projects.js"></script>
+  <script src="projects.js">// Inside your <script> tag in index.html
+
+// Update this function to ensure it uses the cleaned ALL_DEPARTMENTS
+function populateDepartmentDropdown() {
+  const select = document.getElementById('dept-filter');
+  // Clear existing if necessary (optional)
+  select.innerHTML = '<option value="all">All Departments</option>';
+  
+  window.ALL_DEPARTMENTS.forEach(dept => {
+    const option = document.createElement('option');
+    option.value = dept; // matches "Computer Science"
+    option.textContent = dept; // displays "Computer Science"
+    select.appendChild(option);
+  });
+}</script>
   <style>
     /* ===== CSS VARIABLES ===== */
     :root {
