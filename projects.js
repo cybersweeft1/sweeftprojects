@@ -57,11 +57,11 @@ class ProjectStore {
       const response = await fetch(url);
       const text = await response.text();
       
-      // Fix: Better parsing to handle Google's JSON wrapper safely
-      const jsonStr = text.match(/google\.visualization\.Query\.setResponse\(([\s\S\w]+)\)/);
-      if (!jsonStr || !jsonStr[1]) throw new Error("Invalid response format from Sheets");
+      // FIX: Robust Regex to handle Google's JSON wrapper safely regardless of length
+      const match = text.match(/google\.visualization\.Query\.setResponse\(([\s\S\w]+)\)/);
+      if (!match || !match[1]) throw new Error("Invalid response format from Sheets");
       
-      const jsonData = JSON.parse(jsonStr[1]);
+      const jsonData = JSON.parse(match[1]);
       this.projects = this.parseSheetData(jsonData);
       return this.projects;
     } catch (err) {
@@ -73,15 +73,15 @@ class ProjectStore {
   parseSheetData(data) {
     if (!data.table || !data.table.rows) return [];
     
-    // Mapping based on your screenshot: 
+    // Mapping matches your Admin Panel/Screenshot: 
     // A=0(ID), B=1(Name), C=2(Dept), D=3(Desc), E=4(Price), F=5(DriveID), H=7(Status)
     return data.table.rows.map(row => {
       const c = row.c;
-      if (!c || !c[0]) return null; // Skip empty rows
+      if (!c || !c[0]) return null; 
 
-      // Only show if Status (Col H / Index 7) is 'active'
-      const status = c[7]?.v?.toString().toLowerCase() || '';
-      if (status !== 'active') return null;
+      // Only show if Status (Col H / Index 7) is 'Active' or 'active'
+      const statusValue = c[7]?.v?.toString().toLowerCase() || 'active';
+      if (statusValue !== 'active') return null;
 
       const dept = c[2]?.v?.toString().trim() || 'General';
       
@@ -93,6 +93,7 @@ class ProjectStore {
         description: c[3]?.v?.toString() || 'Detailed project documentation.',
         price: parseInt(c[4]?.v) || window.API_CONFIG.FIXED_PRICE,
         driveId: c[5]?.v?.toString().trim() || '',
+        // Direct download link logic
         driveDownloadUrl: `https://drive.google.com/uc?export=download&id=${c[5]?.v}`,
       };
     }).filter(p => p !== null && p.driveId !== '');
