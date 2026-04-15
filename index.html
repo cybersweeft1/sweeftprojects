@@ -1176,13 +1176,14 @@ function populateDepartmentDropdown() {
         currency: 'NGN',
         ref: `PRJ_${Date.now()}_${Math.random().toString(36).substr(2, 6).toUpperCase()}`,
         metadata: {
+         project_name: selectedProject.name, // <--- ADD THIS LINE
+          project_id: selectedProject.id,   // <--- ADD THIS LINE
           custom_fields: [
             { display_name: 'Project Name', variable_name: 'project_name', value: selectedProject.name },
             { display_name: 'Project ID', variable_name: 'project_id', value: selectedProject.id },
             { display_name: 'Department', variable_name: 'department', value: selectedProject.category },
             { display_name: 'School', variable_name: 'school', value: selectedProject.school }
-          ],
-          project_id: selectedProject.id
+          ]
         },
         callback: function(response) {
           isProcessing = false;
