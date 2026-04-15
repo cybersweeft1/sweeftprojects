@@ -1189,16 +1189,16 @@ function populateDepartmentDropdown() {
           isProcessing = false;
           document.getElementById('purchase-modal').classList.remove('active');
           
-          // Save purchase
+          // 1. CALL YOUR BACKEND VERIFICATION HERE
+          verifyOnBackend(response.reference); 
+
+          // 2. Save purchase locally
           savePurchase(selectedProject.id);
           sessionStorage.setItem('last_purchase', JSON.stringify(selectedProject));
           
           lastTransactionRef = response.reference;
-          
-          // Show download screen
           showDownloadScreen();
           
-          // Auto-download after 1 second
           setTimeout(() => {
             performDownload(selectedProject);
           }, 1000);
